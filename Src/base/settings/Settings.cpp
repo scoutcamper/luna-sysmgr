@@ -163,9 +163,8 @@ Settings::Settings()
 	, launcherScrim("/usr/lib/luna/system/luna-applauncher/images/launcher_scrim.png")
         , firstCardLaunch("/var/luna/preferences/used-first-card")
 	, atlasEnabled(false)
+	, dpi(132)
 	, uiScale(1.0)
-	, textScale(1.0)
-	, layoutScale(1.0)
 	, imeScale(1.0)
 	, webAppScale(1.0)
 	, cardGroupingXDistanceFactor(1.0)
@@ -504,11 +503,7 @@ void Settings::load(const char* settingsFile)
 	KEY_INTEGER("UI", "SplashIconSize", splashIconSize);
 	KEY_BOOLEAN("UI", "EnableSplashBackgrounds", enableSplashBackgrounds);
 	KEY_BOOLEAN("UI", "AtlasEnabled", atlasEnabled);
-	KEY_DOUBLE("UI", "UIScale", uiScale);
-	KEY_DOUBLE("UI", "TextScale", textScale);
-	KEY_DOUBLE("UI", "LayoutScale", layoutScale);
-	KEY_DOUBLE("UI", "IMEScale", imeScale);
-	KEY_DOUBLE("UI", "WebAppScale", webAppScale);
+	KEY_DOUBLE("UI", "DPI", dpi);
 
 	KEY_INTEGER("UI", "ModalWindowWidth", modalWindowWidth);
 	KEY_INTEGER("UI", "ModalWindowHeight", modalWindowHeight);
@@ -696,18 +691,19 @@ void Settings::postLoad()
 
 	// packageInstallBase has to be == to appInstallBase for now (at least in version=blowfish timeframe)
 	packageInstallBase = appInstallBase;
-
-	// Piranha flags
 	
 	//Virtual Gesture Area
 	if(!virtualCoreNaviEnabled)
 		virtualCoreNaviHeight = 0;
 
 	//UI Scaling for positive space padding
-	positiveSpaceTopPadding *= layoutScale;
-	positiveSpaceBottomPadding *= layoutScale;
-	statusBarTitleMaxWidth *= textScale;
-	gapBetweenCardGroups *= layoutScale;
+	uiScale = dpi / 132;
+	imeScale = (dpi * 0.7) / 132; //Scale slightly smaller due to limited keyboard screen space
+	webAppScale = dpi / 132;
+	positiveSpaceTopPadding *= uiScale;
+	positiveSpaceBottomPadding *= uiScale;
+	statusBarTitleMaxWidth *= uiScale;
+	gapBetweenCardGroups *= uiScale;
 }
 
 // Expands "1MB" --> 1048576, "2k" --> 2048, etc.
