@@ -66,6 +66,10 @@
 #include <QtGui>
 #include <QtGlobal> 
 
+#if defined(HAVE_HYBRIS)
+#include "HybrisCompositor.h"
+#endif
+
 /* Convenience macro for simulating crashes for debugging purposes only:
 #define crash() {                               \
         volatile int *ip = (volatile int *)0;   \
@@ -592,6 +596,9 @@ int main( int argc, char** argv)
 #if defined(TARGET_DEVICE) && defined(HAVE_OPENGL)
 	::setenv("QT_PLUGIN_PATH", "/usr/plugins", 1);
 	renderMode = "HW egl";
+#if defined(HAVE_HYBRIS)
+	::setenv("EGL_PLATFORM", "fbdev", 0);
+#endif
 #elif defined(TARGET_DEVICE) || defined(TARGET_EMULATOR)
 	::setenv("QT_PLUGIN_PATH", "/usr/plugins", 1);	
 	renderMode = "Software";
@@ -687,6 +694,11 @@ int main( int argc, char** argv)
 	QApplication::setStartDragDistance(settings->tapRadius);
 	QApplication::setDoubleClickInterval (Settings::LunaSettings()->tapDoubleClickDuration);
 	host->show();
+
+	// Initialize Hybris Buffer Server
+#if defined(HAVE_HYBRIS)
+	(void) HybrisCompositor::instance();
+#endif
 	
 	initMallocStatsCb(HostBase::instance()->mainLoop(), s_mallocStatsInterval);
 
